@@ -1,0 +1,49 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Salidas de compilación y empaquetado
+dist/
+dist-ssr/
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Pruebas y Cobertura (Vitest)
+coverage/
+*.lcov
+.vitest/
+
+# Logs y depuración
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Variables de entorno y configuraciones locales
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# Archivos de Editores e IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-workspace
+.zed/
+
+# Archivos del Sistema Operativo
+.DS_Store
+Thumbs.db
+.directory
