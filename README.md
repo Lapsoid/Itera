@@ -1,32 +1,53 @@
-# React + TypeScript + Vite
+# Métodos Numéricos — Solucionador Interactivo
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación web interactiva para resolver ecuaciones no lineales mediante métodos numéricos iterativos, con visualización paso a paso y graficación 2D en tiempo real.
 
-Currently, two official plugins are available:
+## Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Tres métodos iterativos**: Bisección, Punto Fijo y Newton-Raphson
+- **Visualización tabular**: Cada iteración muestra valores, errores relativos y criterios de convergencia
+- **Graficación interactiva**: Representación 2D de la función, raíces, tangentes y delimitadores de intervalo
+- **Validación estricta**: Verificación de condiciones de convergencia (Teorema de Bolzano, criterio de pendiente, detección de divergencia)
+- **Alta precisión**: Evaluación simbólica y numérica con `mathjs`
+- **Arquitectura limpia**: Separación en capas de dominio, aplicación, infraestructura y presentación
 
-## React Compiler
+## Stack Tecnológico
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Capa | Tecnología |
+| :--- | :--- |
+| Framework | React + Vite + TypeScript |
+| Evaluación matemática | mathjs |
+| Graficación | function-plot (D3) |
+| Estilos | Tailwind CSS + shadcn/ui |
+| Pruebas | Vitest |
 
-## Expanding the Oxlint configuration
+## Métodos Implementados
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+| Método | Entradas | Criterio de paro |
+| :--- | :--- | :--- |
+| **Bisección** | f(x), intervalo [a, b] | Error relativo porcentual o \|f(x)\| < ε |
+| **Punto Fijo** | g(x), valor inicial x₀ | Error relativo porcentual |
+| **Newton-Raphson** | f(x), valor inicial x₀ | Error relativo porcentual |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Estructura del Proyecto
+
+```
+src/
+├── core/
+│   ├── domain/          # Entidades, errores y puertos
+│   └── application/     # Casos de uso y DTOs
+├── infrastructure/      # Adaptadores (mathjs, exportación)
+└── presentation/        # Componentes React, hooks y vistas
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Scripts Disponibles
+
+```bash
+pnpm dev       # Servidor de desarrollo
+pnpm build     # Compilación de producción
+pnpm test      # Suite de pruebas unitarias
+```
+
+## Arquitectura
+
+El proyecto sigue los principios de **Clean Architecture**, garantizando que las capas internas (dominio) no dependan de las externas (infraestructura, presentación). Los casos de uso orquestan la lógica de negocio a través de puertos definidos en el dominio, implementados por adaptadores en la infraestructura.
