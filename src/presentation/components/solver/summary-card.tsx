@@ -82,12 +82,6 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ result }) => {
             </div>
           </div>
         </div>
-
-        {result.message && (
-          <p className="mt-4 text-xs text-slate-400 italic bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/60">
-            Nota: {result.message}
-          </p>
-        )}
       </CardContent>
     </Card>
   );

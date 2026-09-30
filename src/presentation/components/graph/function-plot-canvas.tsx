@@ -184,7 +184,7 @@ export const FunctionPlotCanvas: React.FC<FunctionPlotCanvasProps> = ({
     <Card className="overflow-hidden border-slate-800 bg-slate-900/90 shadow-2xl">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <div>
-          <CardTitle className="text-base font-semibold text-slate-100">Visualización Gráfica 2D</CardTitle>
+          <CardTitle className="text-base font-semibold text-slate-100">Visualización Gráfica</CardTitle>
           <p className="text-xs text-slate-400 mt-1">
             {method === 'fixed-point'
               ? 'Azul: f(x) | Verde: g(x) | Gris punteado: y = x'

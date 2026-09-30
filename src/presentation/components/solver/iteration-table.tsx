@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { MethodResult } from '@/core/domain/entities/method-result';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
-import { Download, Table as TableIcon, Hash } from 'lucide-react';
+import { Download, Table as TableIcon, Hash, Info } from 'lucide-react';
 
 interface IterationTableProps {
   result: MethodResult;
@@ -20,7 +20,7 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
     return num.toFixed(precision);
   };
 
-  // Función de exportación a CSV
+  // Función de exportación a CSV con nombres claros y descriptivos
   const handleExportCSV = () => {
     if (!history.length) return;
 
@@ -28,7 +28,17 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
     let rows: string[][] = [];
 
     if (method === 'bisection') {
-      headers = ['Iteración', 'a', 'b', 'c (Raíz)', 'f(a)', 'f(b)', 'f(c)', 'Error Absoluto', 'Error Relativo (%)'];
+      headers = [
+        'Iteración (k)',
+        'Límite Inferior (a_k)',
+        'Límite Superior (b_k)',
+        'Punto Medio / Raíz (c_k)',
+        'Evaluación f(a_k)',
+        'Evaluación f(b_k)',
+        'Evaluación f(c_k)',
+        'Error Absoluto (|c_k - c_{k-1}|)',
+        'Error Relativo Porcentual (ε_a %)',
+      ];
       rows = history.map((step) => [
         step.iteration.toString(),
         step.intervalA?.toString() ?? '',
@@ -41,19 +51,32 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
         step.relativeErrorPercentage.toString(),
       ]);
     } else if (method === 'newton-raphson') {
-      headers = ['Iteración', 'x_k', 'f(x_k)', "f'(x_k)", 'x_(k+1)', 'Error Absoluto', 'Error Relativo (%)'];
+      headers = [
+        'Iteración (k)',
+        'Aproximación Actual (x_k)',
+        'Evaluación Función f(x_k)',
+        "Evaluación Derivada f'(x_k)",
+        'Error Absoluto (|x_k - x_{k-1}|)',
+        'Error Relativo Porcentual (ε_a %)',
+      ];
       rows = history.map((step) => [
         step.iteration.toString(),
         step.currentX.toString(),
         step.functionValue.toString(),
         step.derivativeValue?.toString() ?? '',
-        (step.previousX ?? step.currentX).toString(),
         step.absoluteError.toString(),
         step.relativeErrorPercentage.toString(),
       ]);
     } else {
       // Fixed Point
-      headers = ['Iteración', 'x_k', 'g(x_k)', 'f(x_k)', 'Error Absoluto', 'Error Relativo (%)'];
+      headers = [
+        'Iteración (k)',
+        'Valor Actual (x_k)',
+        'Siguiente Estimación g(x_k)',
+        'Residuo Función f(x_k)',
+        'Error Absoluto (|x_{k+1} - x_k|)',
+        'Error Relativo Porcentual (ε_a %)',
+      ];
       rows = history.map((step) => [
         step.iteration.toString(),
         step.currentX.toString(),
@@ -120,38 +143,144 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
         </div>
       </CardHeader>
 
+      {/* Franja explicativa de la convención de columnas */}
+      <div className="px-6 py-2 bg-slate-950/40 border-y border-slate-800/60 flex items-center gap-2 text-xs text-slate-400">
+        <Info className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+        <span>
+          {method === 'bisection' && (
+            <>
+              <strong>Bisección:</strong> Cada fila muestra el intervalo activo <code className="text-slate-300 font-mono">[aₖ, bₖ]</code>, el punto medio calculado <code className="text-indigo-300 font-mono">cₖ = (a+b)/2</code>, los signos de función y el error acumulado.
+            </>
+          )}
+          {method === 'newton-raphson' && (
+            <>
+              <strong>Newton-Raphson:</strong> Cada fila evalúa el punto actual <code className="text-indigo-300 font-mono">xₖ</code>, la función <code className="text-slate-300 font-mono">f(xₖ)</code> y la pendiente de la recta tangente <code className="text-slate-300 font-mono">f'(xₖ)</code>.
+            </>
+          )}
+          {method === 'fixed-point' && (
+            <>
+              <strong>Punto Fijo:</strong> Cada fila evalúa el punto actual <code className="text-indigo-300 font-mono">xₖ</code>, la función iteradora <code className="text-emerald-300 font-mono">g(xₖ)</code> y el residuo <code className="text-slate-300 font-mono">f(xₖ)</code>.
+            </>
+          )}
+        </span>
+      </div>
+
       <CardContent className="p-0">
-        <div className="overflow-x-auto max-h-[460px] overflow-y-auto">
+        <div className="overflow-x-auto max-h-[480px] overflow-y-auto">
           <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-950/80 sticky top-0 z-10 border-b border-slate-800 text-slate-300 uppercase tracking-wider font-semibold">
+            <thead className="bg-slate-950/90 sticky top-0 z-10 border-b border-slate-800 text-slate-300">
               <tr>
-                <th className="py-3 px-3 text-center w-12 border-r border-slate-800/60">k</th>
+                {/* Columna Iteración */}
+                <th className="py-3 px-3 text-center w-14 border-r border-slate-800/60 bg-slate-950">
+                  <div className="flex flex-col items-center">
+                    <span className="font-semibold text-slate-200">Paso</span>
+                    <span className="font-mono text-[10px] text-slate-400 font-normal">k</span>
+                  </div>
+                </th>
+
+                {/* Columnas específicas para Bisección */}
                 {method === 'bisection' && (
                   <>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">a_k</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">b_k</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono text-indigo-300">c_k (Raíz)</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f(a_k)</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f(b_k)</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f(c_k)</th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Límite Inferior</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">aₖ</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Límite Superior</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">bₖ</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-indigo-950/30">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-indigo-200">Punto Medio (Raíz)</span>
+                        <span className="font-mono text-[10px] text-indigo-400 font-normal">cₖ = (a+b)/2</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Eval. Inferior</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f(aₖ)</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Eval. Superior</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f(bₖ)</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Eval. Raíz</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f(cₖ)</span>
+                      </div>
+                    </th>
                   </>
                 )}
+
+                {/* Columnas específicas para Newton-Raphson */}
                 {method === 'newton-raphson' && (
                   <>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono text-indigo-300">x_k</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f(x_k)</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f'(x_k)</th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-indigo-950/30">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-indigo-200">Aproximación Actual</span>
+                        <span className="font-mono text-[10px] text-indigo-400 font-normal">xₖ</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Valor de Función</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f(xₖ)</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Pendiente / Derivada</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f'(xₖ)</span>
+                      </div>
+                    </th>
                   </>
                 )}
+
+                {/* Columnas específicas para Punto Fijo */}
                 {method === 'fixed-point' && (
                   <>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono text-indigo-300">x_k</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono text-emerald-300">g(x_k)</th>
-                    <th className="py-3 px-3 border-r border-slate-800/60 font-mono">f(x_k)</th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-indigo-950/30">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-indigo-200">Valor Actual</span>
+                        <span className="font-mono text-[10px] text-indigo-400 font-normal">xₖ</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-emerald-950/30">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-emerald-200">Siguiente Estimación</span>
+                        <span className="font-mono text-[10px] text-emerald-400 font-normal">g(xₖ)</span>
+                      </div>
+                    </th>
+                    <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-slate-200">Residuo de Función</span>
+                        <span className="font-mono text-[10px] text-slate-400 font-normal">f(xₖ)</span>
+                      </div>
+                    </th>
                   </>
                 )}
-                <th className="py-3 px-3 border-r border-slate-800/60 font-mono">Error Absoluto</th>
-                <th className="py-3 px-3 font-mono text-amber-300">Error Relativo (%)</th>
+
+                {/* Columnas comunes de Error */}
+                <th className="py-3 px-3 border-r border-slate-800/60 bg-slate-950">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-slate-200">Error Absoluto</span>
+                    <span className="font-mono text-[10px] text-slate-400 font-normal">|xₖ - xₖ₋₁|</span>
+                  </div>
+                </th>
+                <th className="py-3 px-3 bg-amber-950/20">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-amber-200">Error Relativo</span>
+                    <span className="font-mono text-[10px] text-amber-400 font-normal">εₐ (%)</span>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50 font-mono">
@@ -173,7 +302,7 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
                       <td className="py-2.5 px-3 border-r border-slate-800/60 text-slate-300">
                         {formatNum(step.intervalB)}
                       </td>
-                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold">
+                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold bg-indigo-950/10">
                         {formatNum(step.currentX)}
                       </td>
                       <td className="py-2.5 px-3 border-r border-slate-800/60 text-slate-400">
@@ -189,7 +318,7 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
                   )}
                   {method === 'newton-raphson' && (
                     <>
-                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold">
+                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold bg-indigo-950/10">
                         {formatNum(step.currentX)}
                       </td>
                       <td className="py-2.5 px-3 border-r border-slate-800/60 text-slate-300">
@@ -202,10 +331,10 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
                   )}
                   {method === 'fixed-point' && (
                     <>
-                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold">
+                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-indigo-300 font-bold bg-indigo-950/10">
                         {formatNum(step.currentX)}
                       </td>
-                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-emerald-300 font-bold">
+                      <td className="py-2.5 px-3 border-r border-slate-800/60 text-emerald-300 font-bold bg-emerald-950/10">
                         {formatNum(step.gxValue)}
                       </td>
                       <td className="py-2.5 px-3 border-r border-slate-800/60 text-slate-300">
@@ -216,7 +345,7 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
                   <td className="py-2.5 px-3 border-r border-slate-800/60 text-slate-400">
                     {formatNum(step.absoluteError)}
                   </td>
-                  <td className="py-2.5 px-3 text-amber-300">
+                  <td className="py-2.5 px-3 text-amber-300 font-semibold bg-amber-950/10">
                     {step.relativeErrorPercentage < 1e-4
                       ? step.relativeErrorPercentage.toExponential(3) + '%'
                       : `${step.relativeErrorPercentage.toFixed(precision)}%`}
@@ -230,3 +359,4 @@ export const IterationTable: React.FC<IterationTableProps> = ({ result }) => {
     </Card>
   );
 };
+

@@ -7,7 +7,6 @@ import { SummaryCard } from '@/presentation/components/solver/summary-card';
 import { IterationTable } from '@/presentation/components/solver/iteration-table';
 import { Alert } from '@/presentation/components/ui/alert';
 import { useSolver } from '@/presentation/hooks/use-solver';
-import { Sparkles } from 'lucide-react';
 
 export function App() {
   const {
@@ -52,12 +51,8 @@ export function App() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-indigo-400" />
               Selecciona el Método Numérico
             </h2>
-            <span className="text-xs text-slate-500">
-              3 Algoritmos Clásicos de Raíces
-            </span>
           </div>
           <MethodSelector currentMethod={currentMethod} onSelectMethod={handleMethodChange} />
         </section>

@@ -14,7 +14,6 @@ export const MethodSelector: React.FC<MethodSelectorProps> = ({ currentMethod, o
       id: 'bisection' as const,
       name: 'Método de Bisección',
       short: 'Bisección',
-      formula: 'c_k = (a + b) / 2',
       badge: 'Cerrado / Bracketing',
       desc: 'Método de partición binaria basado en el Teorema de Bolzano. Convergencia siempre garantizada.',
       icon: GitCommit,
@@ -23,7 +22,6 @@ export const MethodSelector: React.FC<MethodSelectorProps> = ({ currentMethod, o
       id: 'newton-raphson' as const,
       name: 'Método de Newton-Raphson',
       short: 'Newton-Raphson',
-      formula: 'x_{k+1} = x_k - f(x_k)/f\'(x_k)',
       badge: 'Abierto / Tangente',
       desc: 'Método de convergencia cuadrática mediante extrapolación por rectas tangentes a la curva.',
       icon: TrendingDown,
@@ -32,7 +30,6 @@ export const MethodSelector: React.FC<MethodSelectorProps> = ({ currentMethod, o
       id: 'fixed-point' as const,
       name: 'Método de Punto Fijo',
       short: 'Punto Fijo',
-      formula: 'x_{k+1} = g(x_k)',
       badge: 'Abierto / Iterativo',
       desc: 'Transforma f(x) = 0 en la forma x = g(x). Converge si |g\'(x)| < 1 en el entorno de la raíz.',
       icon: Target,
@@ -81,13 +78,6 @@ export const MethodSelector: React.FC<MethodSelectorProps> = ({ currentMethod, o
 
             <h3 className="font-semibold text-sm text-white mb-1">{m.name}</h3>
             <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-2">{m.desc}</p>
-
-            <div className="mt-auto pt-2 border-t border-slate-800/80 w-full flex items-center justify-between text-[11px] font-mono text-slate-300">
-              <span className="text-slate-500">Fórmula:</span>
-              <span className="text-indigo-300 bg-slate-950/60 px-2 py-0.5 rounded border border-slate-800">
-                {m.formula}
-              </span>
-            </div>
           </button>
         );
       })}

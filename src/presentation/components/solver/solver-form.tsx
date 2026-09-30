@@ -329,7 +329,7 @@ export const SolverForm: React.FC<SolverFormProps> = ({
                     onClick={handleAutoDerivative}
                     className="text-xs text-indigo-400 hover:text-indigo-300 underline font-medium cursor-pointer"
                   >
-                    Calcular Derivada Simbólica Automáticamente
+                    Calcular Derivada Automáticamente
                   </button>
                 </div>
                 <Input
